@@ -1,11 +1,11 @@
-import {populateStory,describeFocal,describeFamily,describeSankey,describeState,number,date} from './story.js?v=20261007-2';
+import {populateStory,describeFocal,describeFamily,describeSankey,describeState,number,date} from './story.js?v=20261014-7';
 
 const chartFiles=[
   'c01-treemap.vg.json','c02-coverage.vl.json','c03-richness.vl.json','c04-threatened-share-map.vl.json',
   'c05-records-timeline.vl.json','c06-species-points.vl.json','c07-waffle.vl.json','c08-family-status-sankey.vg.json',
   'c09-listing-matrix.vl.json','c10-threatened-count-map.vl.json','c11-protection-histogram.vl.json','c12-protection-scatter.vl.json'
 ];
-const dataNames=['summary','family_summary','taxonomy_hierarchy','state_summary','yearly_records','focal_species','focal_points','threatened_composition','waffle_cells','family_status_flows','listing_jurisdiction_matrix','bioregion_protection','protection_histogram','dataset_metadata','occurrence_source_credits'];
+const dataNames=['summary','family_summary','taxonomy_hierarchy','state_summary','yearly_records','focal_species','focal_points','threatened_composition','waffle_cells','family_status_flows','listing_jurisdiction_matrix','bioregion_protection','protection_histogram','dataset_metadata'];
 const views=new Map(),errors=[];
 const mapRowCharts=new Set(['c03','c04','c09','c10']);
 const pairedChartHeights={c01:390,c02:390,c11:320,c12:320};
@@ -54,32 +54,29 @@ function safeLink(label,url){
 
 function sources(data){
   const register=document.getElementById('source-register');
+  const descriptions={
+    APC:{name:'Australian Plant Census',role:'Native plant names, families and genera'},
+    ALA:{name:'Atlas of Living Australia',role:'Records of where and when plants were documented'},
+    DCCEEW:{name:'National threatened-species list',role:'Conservation categories and listed jurisdictions'},
+    CAPAD:{name:'Protected-area data',role:'Protected-land coverage'},
+    ABS:{name:'Australian Bureau of Statistics',role:'Map boundaries and jurisdiction reference points'}
+  };
   for(const source of data.dataset_metadata.sources){
+    const description=descriptions[source.id];
     const article=document.createElement('article');article.className='source-item';
-    const h=document.createElement('h3');h.append(safeLink(`${source.id} · ${source.author}`,source.url));
-    const p=document.createElement('p');p.textContent=`${date(source.snapshot)}. ${source.role}.`;
-    const rights=document.createElement('p');rights.append(source.licence_url?safeLink(source.licence,source.licence_url):document.createTextNode(source.licence));
+    const h=document.createElement('h3');h.append(safeLink(`${source.id} · ${description.name}`,source.url));
+    const p=document.createElement('p');p.textContent=`${date(source.snapshot)}. ${description.role}.`;
+    const rights=document.createElement('p');
+    if(source.id==='ALA'){
+      const credits=document.createElement('a');
+      credits.href='data/processed/occurrence_source_credits.json';
+      credits.textContent='Original data credits and licences';
+      rights.append(credits);
+    }else{
+      rights.append(source.licence_url?safeLink(source.licence,source.licence_url):document.createTextNode(source.licence));
+    }
     article.append(h,p,rights);register.append(article);
   }
-  const credits=data.occurrence_source_credits;
-  document.getElementById('provider-summary').textContent=`${number(credits.length)} contributing occurrence providers · original citations and rights`;
-  const details=document.getElementById('provider-details');
-  details.addEventListener('toggle',()=>{
-    const container=document.getElementById('provider-credits');
-    if(!details.open||container.childElementCount)return;
-    const fragment=document.createDocumentFragment();
-    for(const r of credits){
-      const article=document.createElement('article'),h=document.createElement('h4'),p=document.createElement('p'),rights=document.createElement('p');
-      h.textContent=`${r.name} (${r.uid}) · ${number(r.records_used)} retained records`;
-      p.textContent=r.citation||'No separate citation text supplied in the export.';
-      rights.textContent=r.rights||'See original record licence and provider information.';
-      article.append(h,p,rights);
-      if(r.doi){const url=r.doi.startsWith('http')?r.doi:`https://doi.org/${r.doi}`;article.append(safeLink('Dataset DOI ↗',url));}
-      else if(r.more_information)article.append(safeLink('Provider information ↗',r.more_information));
-      fragment.append(article);
-    }
-    container.append(fragment);
-  });
 }
 
 async function signal(id,name,value){

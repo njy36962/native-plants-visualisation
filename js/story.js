@@ -42,15 +42,11 @@ export function populateStory(data,config){
   const largestShare=highest(states,'verified_threatened_share_percent');
   const threatenedCount=highest(states,'verified_threatened_species');
   const cr=data.threatened_composition.find(r=>r.status==='Critically Endangered');
-  const biggestStatus=highest(data.threatened_composition,'species_count');
   const peak=highest(data.yearly_records.filter(r=>!r.partial_year),'records');
   const partial=data.yearly_records.find(r=>r.partial_year);
   const modal=highest(data.protection_histogram,'region_count');
   const coverage=100*s.recorded_species/s.checklist_species;
-  const mostProtected=highest(states,'protected_percent');
-  const leastProtected=lowest(states,'protected_percent');
   const studentId=String(config.studentId??'').trim();
-  text('publication-meta',`By ${config.author}${studentId?` · Student ID: ${studentId}`:''}`);
   text('metric-checklist',number(s.checklist_species));
   text('metric-recorded',number(s.recorded_species));
   text('metric-records',number(s.retained_records));
@@ -63,19 +59,12 @@ export function populateStory(data,config){
   text('finding-c02',`The outlined dots mark the coverage extremes among the ${leading.length} largest families: ${least.family} at ${percent(least.documentation_percent)} and ${covered.family} at ${percent(covered.documentation_percent)}. The ${(covered.documentation_percent-least.documentation_percent).toFixed(1)} percentage-point gap shows that checklist size alone does not tell us how thoroughly a family is represented.`);
   text('finding-c03',`The highlighted bar is ${richest.state_name}, with ${number(richest.recorded_species)} documented species. Next, switch from the species count to the threatened share.${richest.state_code!==largestShare.state_code?' The leading jurisdiction changes.':''} Recording effort and filtering influence these counts.`);
   text('finding-c04',`${largestShare.state_name} has the highest recorded threatened share: ${number(largestShare.verified_threatened_species)} of ${number(largestShare.recorded_species)} species (${percent(largestShare.verified_threatened_share_percent)}). The denominator is recorded native species in that jurisdiction, so this map answers a different question from the richness bars.`);
-  text('bridge-diversity',`The rankings change with the measure. Before interpreting either as a complete picture of Australia's flora, look at how the occurrence records were collected over time and where their locations appear.`);
-  text('records-insight',`The records represent ${percent(coverage)} of the selected checklist (${number(s.recorded_species)} of ${number(s.checklist_species)} species). ${number(s.checklist_species-s.recorded_species)} selected species have no retained record in this window. That is a gap in this dataset, not evidence that those plants are absent.`);
   text('finding-c05',`The labelled peak is ${peak.year}, with ${number(peak.records)} retained records. This is the highest full-year total. The pattern reflects documentation, influenced by collection, reporting and digitisation.${partial?` The separate ${partial.year} diamond contains ${number(partial.records)} records for an incomplete year; it cannot be read as a full-year fall.`:''}`);
-  text('bridge-records',`Recorded presence gives us a location and a date. To understand assessed conservation risk, we now turn to a different source: national threatened-species listings. The next charts describe the matched listed set, including species without retained ALA records.`);
-  text('risk-insight',`The conservation lens identifies ${number(s.verified_extant_threatened_species)} selected species with unambiguous national threat matches. ${biggestStatus.status} is the largest category (${number(biggestStatus.species_count)} species), while ${percent(cr.share_percent)} are critically endangered. Now follow how families and jurisdictions contribute to this listed set.`);
   text('finding-c07',`The coloured tiles represent ${number(cr.species_count)} critically endangered species out of ${number(s.verified_extant_threatened_species)} matched extant threatened species: exactly ${percent(cr.share_percent)}. The tiles round that share. This denominator is the matched threatened set, not all native species.`);
   text('finding-c08',flowFinding(data,''));
   const matrixTop=highest(data.listing_jurisdiction_matrix,'species_count');
   text('finding-c09',`The gold outline marks the largest cell: ${matrixTop.state_name} × ${matrixTop.status}, with ${number(matrixTop.species_count)} matched species indicated by the listing source. Read across a row to compare categories. A species may appear in several jurisdictions, so adding rows would count shared species more than once.`);
   text('finding-c10',`${threatenedCount.state_name} has the largest documented threatened count (${number(threatenedCount.verified_threatened_species)} species). Circle area shows how many; the earlier colour map shows what share of recorded native species they represent. The counts here use ALA documentation, whereas the matrix uses listing-source jurisdictions.`);
-  text('bridge-risk',`The listings identify assessed risk, but they do not tell us how much land is protected. The final section adds landscape context: first across ecological bioregions, then across states and territories.`);
-  const capad=data.dataset_metadata.sources.find(r=>r.id==='CAPAD');
-  text('protection-insight',`Protected-land coverage ranges from ${percent(leastProtected.protected_percent)} in ${leastProtected.state_name} to ${percent(mostProtected.protected_percent)} in ${mostProtected.state_name}. The latest published CAPAD snapshot describes ${date(capad.snapshot)}. It adds landscape context to the later species records and listings; it does not measure their conservation outcomes.`);
   text('finding-c11',`The highlighted ${modal.bin_start}–${modal.bin_end}% interval contains the most bioregions: ${number(modal.region_count)} of ${number(data.bioregion_protection.length)} (${percent(100*modal.region_count/data.bioregion_protection.length)}). Each bioregion counts once regardless of area. This distribution describes regional coverage, not the percentage of Australia protected.`);
   text('finding-c12',stateFinding(data,''));
   text('closing-text',`The story has three distinct findings: ${richest.state_name} leads documented native richness, ${largestShare.state_name} leads recorded threatened share, and protected-land coverage varies across regions. Together, the charts show why biodiversity, assessed risk and land protection need to be read as related but different measures.`);
@@ -83,14 +72,14 @@ export function populateStory(data,config){
   text('takeaway-risk',`${number(s.verified_extant_threatened_species)} matched threatened species; ${percent(cr.share_percent)} are critically endangered. Unmatched species are not automatically safe.`);
   text('takeaway-protection',`${number(modal.region_count)} of ${number(data.bioregion_protection.length)} bioregions lie in the ${modal.bin_start}–${modal.bin_end}% protected interval. Coverage alone does not establish recovery.`);
   const datedSources=data.dataset_metadata.sources.map(r=>new Date(r.snapshot).getTime());
-  text('metadata-dates',`Source reference dates run from ${date(Math.min(...datedSources))} to ${date(Math.max(...datedSources))}. Chart captions identify the relevant snapshots. Processed data prepared ${date(data.dataset_metadata.generated_utc)}; webpage updated ${date(config.workDate)}.`);
-  text('author-name',config.author);
-  text('work-meta',`${config.course} · ${config.campus} campus · ${date(config.workDate)}`);
+  text('metadata-dates',`Source reference dates run from ${date(Math.min(...datedSources))} to ${date(Math.max(...datedSources))}. Chart captions identify the relevant snapshots. `);
+  text('author-name',`${config.author}${studentId?` ${studentId}`:''}`);
+  text('work-meta',config.course);
   text('ai-ack',config.aiAcknowledgement);
   for(const el of document.querySelectorAll('.source-caption')){
     el.textContent='Sources: '+el.dataset.sources.split(',').map(id=>{
       const source=data.dataset_metadata.sources.find(r=>r.id===id);
-      return `${id} · ${date(source.snapshot)}`;
+      return `${id}`;
     }).join(' / ');
   }
   const guide=document.getElementById('jurisdiction-guide');
