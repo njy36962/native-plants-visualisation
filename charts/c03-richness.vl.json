@@ -1,0 +1,143 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "C3. Distinct recorded native species by state/territory.",
+  "width": "container",
+  "height": 300,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "DM Sans",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "gridColor": "#e3e5df",
+      "domain": false,
+      "tickColor": "#c7cfc6",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "orient": "bottom",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 12,
+      "fontWeight": 500,
+      "anchor": "start",
+      "color": "#253c34",
+      "offset": 12
+    },
+    "text": {
+      "font": "DM Sans"
+    }
+  },
+  "data": {
+    "url": "data/processed/state_summary.json"
+  },
+  "encoding": {
+    "y": {
+      "field": "state_name",
+      "type": "nominal",
+      "sort": "-x",
+      "axis": {
+        "title": null,
+        "labelLimit": 185
+      }
+    },
+    "x": {
+      "field": "recorded_species",
+      "type": "quantitative",
+      "axis": {
+        "title": "Recorded native species",
+        "format": "~s",
+        "tickCount": 5
+      },
+      "scale": {
+        "domainMin": 0
+      }
+    },
+    "tooltip": [
+      {
+        "field": "state_name",
+        "type": "nominal",
+        "title": "Jurisdiction"
+      },
+      {
+        "field": "recorded_species",
+        "type": "quantitative",
+        "title": "Recorded native species",
+        "format": ","
+      },
+      {
+        "field": "verified_threatened_species",
+        "type": "quantitative",
+        "title": "Matched nationally threatened species",
+        "format": ","
+      },
+      {
+        "field": "verified_threatened_share_percent",
+        "type": "quantitative",
+        "title": "Share of recorded species (%)",
+        "format": ".2f"
+      }
+    ]
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "bar",
+        "cornerRadiusEnd": 3
+      },
+      "encoding": {
+        "color": {
+          "condition": {
+            "test": "datum.recorded_species === datum.maximum_richness",
+            "value": "#b88136"
+          },
+          "value": "#285646"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 6,
+        "fontSize": 11,
+        "color": "#253c34"
+      },
+      "encoding": {
+        "text": {
+          "field": "recorded_species",
+          "type": "quantitative",
+          "format": ","
+        }
+      }
+    }
+  ],
+  "transform": [
+    {
+      "joinaggregate": [
+        {
+          "op": "max",
+          "field": "recorded_species",
+          "as": "maximum_richness"
+        }
+      ]
+    }
+  ]
+}

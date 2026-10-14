@@ -1,0 +1,346 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "C1. Accepted native species by family and genus. Leaf area is proportional to checklist species; no parent double counting.",
+  "width": 700,
+  "height": 390,
+  "padding": 4,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "signals": [
+    {
+      "name": "selectedFamily",
+      "value": ""
+    }
+  ],
+  "data": [
+    {
+      "name": "raw",
+      "url": "data/processed/taxonomy_hierarchy.json"
+    },
+    {
+      "name": "visible",
+      "source": "raw",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "selectedFamily === '' || datum.family === selectedFamily"
+        }
+      ]
+    },
+    {
+      "name": "hierarchy_root",
+      "values": [
+        {
+          "id": "root",
+          "parent": null,
+          "species_count": 0
+        }
+      ]
+    },
+    {
+      "name": "families",
+      "source": "visible",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [
+            "family"
+          ],
+          "fields": [
+            "species_count"
+          ],
+          "ops": [
+            "sum"
+          ],
+          "as": [
+            "family_species"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "'family|' + datum.family",
+          "as": "id"
+        },
+        {
+          "type": "formula",
+          "expr": "'root'",
+          "as": "parent"
+        },
+        {
+          "type": "formula",
+          "expr": "0",
+          "as": "species_count"
+        }
+      ]
+    },
+    {
+      "name": "genera",
+      "source": "visible",
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "'genus|' + datum.family + '|' + datum.genus",
+          "as": "id"
+        },
+        {
+          "type": "formula",
+          "expr": "'family|' + datum.family",
+          "as": "parent"
+        }
+      ]
+    },
+    {
+      "name": "tree",
+      "source": [
+        "hierarchy_root",
+        "families",
+        "genera"
+      ],
+      "transform": [
+        {
+          "type": "stratify",
+          "key": "id",
+          "parentKey": "parent"
+        },
+        {
+          "type": "treemap",
+          "field": "species_count",
+          "sort": {
+            "field": "value",
+            "order": "descending"
+          },
+          "method": "squarify",
+          "paddingInner": 1,
+          "paddingOuter": 2,
+          "paddingTop": 17,
+          "size": [
+            {
+              "signal": "width"
+            },
+            {
+              "signal": "height"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "leaves",
+      "source": "tree",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.depth === 2"
+        }
+      ]
+    },
+    {
+      "name": "parents",
+      "source": "tree",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.depth === 1"
+        }
+      ]
+    },
+    {
+      "name": "genus_labels",
+      "source": "leaves",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.x1-datum.x0 > 58 && datum.y1-datum.y0 > 28"
+        }
+      ]
+    },
+    {
+      "name": "family_labels",
+      "source": "parents",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.x1-datum.x0 > 70 && datum.y1-datum.y0 > 35"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": {
+        "data": "families",
+        "field": "family",
+        "sort": {
+          "op": "sum",
+          "field": "family_species",
+          "order": "descending"
+        }
+      },
+      "range": [
+        "#386657",
+        "#61927a",
+        "#8dac82",
+        "#7aa7a0",
+        "#afba88",
+        "#aac4b6",
+        "#cdcc9e",
+        "#9eb7bb",
+        "#c0d0be"
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "type": "rect",
+      "from": {
+        "data": "leaves"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x0"
+          },
+          "x2": {
+            "field": "x1"
+          },
+          "y": {
+            "field": "y0"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "scale": "color",
+            "field": "family"
+          },
+          "tooltip": {
+            "signal": "{'Family':datum.family,'Genus':datum.genus,'Native species':datum.species_count}"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "from": {
+        "data": "genus_labels"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "datum.x0+5"
+          },
+          "y": {
+            "signal": "datum.y0+6"
+          },
+          "text": {
+            "field": "genus"
+          },
+          "align": {
+            "value": "left"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "font": {
+            "value": "DM Sans"
+          },
+          "fontSize": {
+            "value": 10
+          },
+          "fill": {
+            "value": "#132c22"
+          },
+          "limit": {
+            "signal": "max(0,datum.x1-datum.x0-10)"
+          },
+          "opacity": {
+            "signal": "datum.x1-datum.x0 > 58 && datum.y1-datum.y0 > 28 ? 1 : 0"
+          }
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "from": {
+        "data": "parents"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x0"
+          },
+          "x2": {
+            "field": "x1"
+          },
+          "y": {
+            "field": "y0"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "value": "transparent"
+          },
+          "stroke": {
+            "value": "#f6f6ed"
+          },
+          "strokeWidth": {
+            "value": 1
+          },
+          "tooltip": {
+            "signal": "{'Family':datum.family,'Native species':datum.family_species}"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "from": {
+        "data": "family_labels"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "datum.x0+5"
+          },
+          "y": {
+            "signal": "datum.y0+3"
+          },
+          "align": {
+            "value": "left"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "text": {
+            "signal": "datum.family + ' · ' + format(datum.family_species,',')"
+          },
+          "font": {
+            "value": "DM Sans"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fontWeight": {
+            "value": 600
+          },
+          "fill": {
+            "value": "#253c34"
+          },
+          "limit": {
+            "signal": "max(0,datum.x1-datum.x0-8)"
+          },
+          "opacity": {
+            "signal": "datum.x1-datum.x0 > 70 && datum.y1-datum.y0 > 35 ? 1 : 0"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "C7. Rounded critically endangered share in a unit waffle; exact figures appear in the caption.",
+  "width": "container",
+  "height": 250,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "DM Sans",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "gridColor": "#e3e5df",
+      "domain": false,
+      "tickColor": "#c7cfc6",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "orient": "bottom",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 12,
+      "fontWeight": 500,
+      "anchor": "start",
+      "color": "#253c34",
+      "offset": 12
+    },
+    "text": {
+      "font": "DM Sans"
+    }
+  },
+  "data": {
+    "url": "data/processed/waffle_cells.json"
+  },
+  "mark": {
+    "type": "rect",
+    "cornerRadius": 2,
+    "stroke": "#fffdf6",
+    "strokeWidth": 3
+  },
+  "encoding": {
+    "x": {
+      "field": "column",
+      "type": "ordinal",
+      "axis": null,
+      "scale": {
+        "paddingInner": 0.05
+      }
+    },
+    "y": {
+      "field": "row",
+      "type": "ordinal",
+      "axis": null,
+      "scale": {
+        "paddingInner": 0.05
+      }
+    },
+    "color": {
+      "field": "focus_category",
+      "type": "nominal",
+      "scale": {
+        "domain": [
+          true,
+          false
+        ],
+        "range": [
+          "#923c40",
+          "#e4e9df"
+        ]
+      },
+      "legend": null
+    },
+    "tooltip": [
+      {
+        "field": "focus_category",
+        "type": "nominal",
+        "title": "Tile represents critically endangered share"
+      }
+    ]
+  }
+}

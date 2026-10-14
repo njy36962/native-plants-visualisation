@@ -1,0 +1,403 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "C5. Retained occurrence records per year; final year is incomplete.",
+  "width": "container",
+  "height": 290,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "DM Sans",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "gridColor": "#e3e5df",
+      "domain": false,
+      "tickColor": "#c7cfc6",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "orient": "bottom",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 12,
+      "fontWeight": 500,
+      "anchor": "start",
+      "color": "#253c34",
+      "offset": 12
+    },
+    "text": {
+      "font": "DM Sans"
+    }
+  },
+  "data": {
+    "url": "data/processed/yearly_records.json"
+  },
+  "layer": [
+    {
+      "transform": [
+        {
+          "filter": "!datum.partial_year"
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "color": "#287b82",
+        "strokeWidth": 2.5,
+        "point": {
+          "filled": true,
+          "size": 35
+        }
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative",
+          "axis": {
+            "title": null,
+            "format": "d",
+            "tickCount": 8,
+            "labelOverlap": "greedy",
+            "labelSeparation": 6
+          },
+          "scale": {
+            "zero": false
+          }
+        },
+        "y": {
+          "field": "records",
+          "type": "quantitative",
+          "axis": {
+            "title": "Occurrence records",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domainMin": 0
+          }
+        },
+        "tooltip": [
+          {
+            "field": "year",
+            "type": "quantitative",
+            "title": "Year",
+            "format": "d"
+          },
+          {
+            "field": "records",
+            "type": "quantitative",
+            "title": "Retained records",
+            "format": ","
+          },
+          {
+            "field": "partial_year",
+            "type": "nominal",
+            "title": "Incomplete year"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.partial_year"
+        }
+      ],
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "shape": "diamond",
+        "size": 110,
+        "color": "#b88136"
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative",
+          "axis": {
+            "title": null,
+            "format": "d",
+            "tickCount": 8,
+            "labelOverlap": "greedy",
+            "labelSeparation": 6
+          },
+          "scale": {
+            "zero": false
+          }
+        },
+        "y": {
+          "field": "records",
+          "type": "quantitative",
+          "axis": {
+            "title": "Occurrence records",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domainMin": 0
+          }
+        },
+        "tooltip": [
+          {
+            "field": "year",
+            "type": "quantitative",
+            "title": "Year",
+            "format": "d"
+          },
+          {
+            "field": "records",
+            "type": "quantitative",
+            "title": "Retained records",
+            "format": ","
+          },
+          {
+            "field": "partial_year",
+            "type": "nominal",
+            "title": "Incomplete year"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.partial_year"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -10,
+        "dy": -14,
+        "color": "#b88136",
+        "fontWeight": 600
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative",
+          "axis": {
+            "title": null,
+            "format": "d",
+            "tickCount": 8,
+            "labelOverlap": "greedy",
+            "labelSeparation": 6
+          },
+          "scale": {
+            "zero": false
+          }
+        },
+        "y": {
+          "field": "records",
+          "type": "quantitative",
+          "axis": {
+            "title": "Occurrence records",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domainMin": 0
+          }
+        },
+        "tooltip": [
+          {
+            "field": "year",
+            "type": "quantitative",
+            "title": "Year",
+            "format": "d"
+          },
+          {
+            "field": "records",
+            "type": "quantitative",
+            "title": "Retained records",
+            "format": ","
+          },
+          {
+            "field": "partial_year",
+            "type": "nominal",
+            "title": "Incomplete year"
+          }
+        ],
+        "text": {
+          "value": "Partial year"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "!datum.partial_year"
+        },
+        {
+          "joinaggregate": [
+            {
+              "op": "max",
+              "field": "records",
+              "as": "maximum_records"
+            }
+          ]
+        },
+        {
+          "filter": "datum.records === datum.maximum_records"
+        },
+        {
+          "calculate": "format(datum.year,'d') + ' · full-year peak'",
+          "as": "peak_label"
+        }
+      ],
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "fill": "#fffdf7",
+        "stroke": "#287b82",
+        "strokeWidth": 2,
+        "size": 100
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative",
+          "axis": {
+            "title": null,
+            "format": "d",
+            "tickCount": 8,
+            "labelOverlap": "greedy",
+            "labelSeparation": 6
+          },
+          "scale": {
+            "zero": false
+          }
+        },
+        "y": {
+          "field": "records",
+          "type": "quantitative",
+          "axis": {
+            "title": "Occurrence records",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domainMin": 0
+          }
+        },
+        "tooltip": [
+          {
+            "field": "year",
+            "type": "quantitative",
+            "title": "Year",
+            "format": "d"
+          },
+          {
+            "field": "records",
+            "type": "quantitative",
+            "title": "Retained records",
+            "format": ","
+          },
+          {
+            "field": "partial_year",
+            "type": "nominal",
+            "title": "Incomplete year"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "!datum.partial_year"
+        },
+        {
+          "joinaggregate": [
+            {
+              "op": "max",
+              "field": "records",
+              "as": "maximum_records"
+            }
+          ]
+        },
+        {
+          "filter": "datum.records === datum.maximum_records"
+        },
+        {
+          "calculate": "format(datum.year,'d') + ' · full-year peak'",
+          "as": "peak_label"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -6,
+        "dy": -19,
+        "fontSize": 11,
+        "fontWeight": 600,
+        "color": "#253c34"
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative",
+          "axis": {
+            "title": null,
+            "format": "d",
+            "tickCount": 8,
+            "labelOverlap": "greedy",
+            "labelSeparation": 6
+          },
+          "scale": {
+            "zero": false
+          }
+        },
+        "y": {
+          "field": "records",
+          "type": "quantitative",
+          "axis": {
+            "title": "Occurrence records",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domainMin": 0
+          }
+        },
+        "tooltip": [
+          {
+            "field": "year",
+            "type": "quantitative",
+            "title": "Year",
+            "format": "d"
+          },
+          {
+            "field": "records",
+            "type": "quantitative",
+            "title": "Retained records",
+            "format": ","
+          },
+          {
+            "field": "partial_year",
+            "type": "nominal",
+            "title": "Incomplete year"
+          }
+        ],
+        "text": {
+          "field": "peak_label",
+          "type": "nominal"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "C2. Documentation among the 12 largest checklist families.",
+  "width": "container",
+  "height": 340,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "DM Sans",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "gridColor": "#e3e5df",
+      "domain": false,
+      "tickColor": "#c7cfc6",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "orient": "bottom",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 12,
+      "fontWeight": 500,
+      "anchor": "start",
+      "color": "#253c34",
+      "offset": 12
+    },
+    "text": {
+      "font": "DM Sans"
+    }
+  },
+  "data": {
+    "url": "data/processed/family_summary.json"
+  },
+  "transform": [
+    {
+      "window": [
+        {
+          "op": "row_number",
+          "as": "rank"
+        }
+      ],
+      "sort": [
+        {
+          "field": "checklist_species",
+          "order": "descending"
+        }
+      ]
+    },
+    {
+      "filter": "datum.rank <= 12"
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "min",
+          "field": "documentation_percent",
+          "as": "minimum_coverage"
+        },
+        {
+          "op": "max",
+          "field": "documentation_percent",
+          "as": "maximum_coverage"
+        }
+      ]
+    }
+  ],
+  "encoding": {
+    "y": {
+      "field": "family",
+      "type": "nominal",
+      "sort": "-x",
+      "axis": {
+        "title": null
+      }
+    },
+    "x": {
+      "field": "documentation_percent",
+      "type": "quantitative",
+      "scale": {
+        "domain": [
+          0,
+          100
+        ]
+      },
+      "axis": {
+        "title": "Checklist species with retained records (%)"
+      }
+    },
+    "tooltip": [
+      {
+        "field": "family",
+        "type": "nominal",
+        "title": "Family"
+      },
+      {
+        "field": "recorded_species",
+        "type": "quantitative",
+        "title": "Recorded species",
+        "format": ","
+      },
+      {
+        "field": "checklist_species",
+        "type": "quantitative",
+        "title": "Checklist species",
+        "format": ","
+      },
+      {
+        "field": "documentation_percent",
+        "type": "quantitative",
+        "title": "Documentation (%)",
+        "format": ".1f"
+      }
+    ]
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "rule",
+        "strokeWidth": 1.5,
+        "color": "#b7c9c1"
+      },
+      "encoding": {
+        "x2": {
+          "datum": 0
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 85,
+        "color": "#287b82",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "stroke": {
+          "condition": {
+            "test": "datum.documentation_percent === datum.minimum_coverage || datum.documentation_percent === datum.maximum_coverage",
+            "value": "#253c34"
+          },
+          "value": "transparent"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 9,
+        "fontSize": 11,
+        "color": "#253c34"
+      },
+      "encoding": {
+        "text": {
+          "field": "documentation_percent",
+          "type": "quantitative",
+          "format": ".0f"
+        }
+      }
+    }
+  ]
+}

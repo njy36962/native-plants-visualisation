@@ -1,0 +1,458 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "C8. Family-to-national-status composition. Filled ribbon thickness encodes unique species; no movement through time.",
+  "width": 800,
+  "height": 390,
+  "padding": 8,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "signals": [
+    {
+      "name": "selectedFamily",
+      "value": ""
+    },
+    {
+      "name": "gap",
+      "value": 12
+    },
+    {
+      "name": "total",
+      "update": "data('totals')[0].total"
+    },
+    {
+      "name": "unit",
+      "update": "(height-(length(data('family_totals'))-1)*gap)/total"
+    },
+    {
+      "name": "left",
+      "value": 115
+    },
+    {
+      "name": "right",
+      "update": "width-155"
+    },
+    {
+      "name": "bend",
+      "update": "(left+right)/2"
+    }
+  ],
+  "data": [
+    {
+      "name": "raw",
+      "url": "data/processed/family_status_flows.json",
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "indexof([\"Critically Endangered\", \"Endangered\", \"Vulnerable\"],datum.status)",
+          "as": "severity"
+        }
+      ]
+    },
+    {
+      "name": "totals",
+      "source": "raw",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": [
+            "species_count"
+          ],
+          "ops": [
+            "sum"
+          ],
+          "as": [
+            "total"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "family_totals",
+      "source": "raw",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [
+            "family"
+          ],
+          "fields": [
+            "species_count"
+          ],
+          "ops": [
+            "sum"
+          ],
+          "as": [
+            "count"
+          ]
+        },
+        {
+          "type": "window",
+          "sort": {
+            "field": "count",
+            "order": "descending"
+          },
+          "ops": [
+            "row_number"
+          ],
+          "as": [
+            "rank"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "status_totals",
+      "source": "raw",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [
+            "status",
+            "severity"
+          ],
+          "fields": [
+            "species_count"
+          ],
+          "ops": [
+            "sum"
+          ],
+          "as": [
+            "count"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "families",
+      "source": "family_totals",
+      "transform": [
+        {
+          "type": "stack",
+          "field": "count",
+          "sort": {
+            "field": "rank"
+          },
+          "as": [
+            "start",
+            "end"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "datum.start*unit+(datum.rank-1)*gap",
+          "as": "y0"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.y0+datum.count*unit",
+          "as": "y1"
+        }
+      ]
+    },
+    {
+      "name": "statuses",
+      "source": "status_totals",
+      "transform": [
+        {
+          "type": "stack",
+          "field": "count",
+          "sort": {
+            "field": "severity"
+          },
+          "as": [
+            "start",
+            "end"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "datum.start*unit+datum.severity*(height-total*unit)/(length(data('status_totals'))-1)",
+          "as": "y0"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.y0+datum.count*unit",
+          "as": "y1"
+        }
+      ]
+    },
+    {
+      "name": "links",
+      "source": "raw",
+      "transform": [
+        {
+          "type": "lookup",
+          "from": "families",
+          "key": "family",
+          "fields": [
+            "family"
+          ],
+          "values": [
+            "y0",
+            "rank"
+          ],
+          "as": [
+            "family_y",
+            "family_rank"
+          ]
+        },
+        {
+          "type": "lookup",
+          "from": "statuses",
+          "key": "status",
+          "fields": [
+            "status"
+          ],
+          "values": [
+            "y0"
+          ],
+          "as": [
+            "status_y"
+          ]
+        },
+        {
+          "type": "window",
+          "groupby": [
+            "family"
+          ],
+          "sort": {
+            "field": "severity"
+          },
+          "ops": [
+            "sum"
+          ],
+          "fields": [
+            "species_count"
+          ],
+          "as": [
+            "family_cumulative"
+          ],
+          "frame": [
+            null,
+            0
+          ]
+        },
+        {
+          "type": "window",
+          "groupby": [
+            "status"
+          ],
+          "sort": {
+            "field": "family_rank"
+          },
+          "ops": [
+            "sum"
+          ],
+          "fields": [
+            "species_count"
+          ],
+          "as": [
+            "status_cumulative"
+          ],
+          "frame": [
+            null,
+            0
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "datum.family_y+(datum.family_cumulative-datum.species_count)*unit",
+          "as": "sy"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.status_y+(datum.status_cumulative-datum.species_count)*unit",
+          "as": "ty"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.species_count*unit",
+          "as": "thickness"
+        },
+        {
+          "type": "formula",
+          "expr": "'M'+(left+12)+','+datum.sy+' C'+bend+','+datum.sy+' '+bend+','+datum.ty+' '+right+','+datum.ty+' L'+right+','+(datum.ty+datum.thickness)+' C'+bend+','+(datum.ty+datum.thickness)+' '+bend+','+(datum.sy+datum.thickness)+' '+(left+12)+','+(datum.sy+datum.thickness)+' Z'",
+          "as": "path"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "statusColor",
+      "type": "ordinal",
+      "domain": [
+        "Critically Endangered",
+        "Endangered",
+        "Vulnerable"
+      ],
+      "range": [
+        "#923c40",
+        "#c0773a",
+        "#d5b36b"
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "type": "path",
+      "from": {
+        "data": "links"
+      },
+      "encode": {
+        "update": {
+          "path": {
+            "field": "path"
+          },
+          "fill": {
+            "scale": "statusColor",
+            "field": "status"
+          },
+          "fillOpacity": {
+            "signal": "selectedFamily === '' || datum.family === selectedFamily ? 0.58 : 0.08"
+          },
+          "tooltip": {
+            "signal": "{'Family':datum.family,'National status':datum.status,'Species':datum.species_count}"
+          }
+        },
+        "hover": {
+          "fillOpacity": {
+            "value": 0.9
+          }
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "from": {
+        "data": "families"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "left"
+          },
+          "width": {
+            "value": 12
+          },
+          "y": {
+            "field": "y0"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "value": "#285646"
+          },
+          "opacity": {
+            "signal": "selectedFamily === '' || datum.family === selectedFamily ? 1 : 0.25"
+          },
+          "tooltip": {
+            "signal": "{'Family':datum.family,'Listed species':datum.count}"
+          }
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "from": {
+        "data": "statuses"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "right"
+          },
+          "width": {
+            "value": 12
+          },
+          "y": {
+            "field": "y0"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "scale": "statusColor",
+            "field": "status"
+          },
+          "tooltip": {
+            "signal": "{'National status':datum.status,'Species':datum.count}"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "from": {
+        "data": "families"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "left-8"
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "text": {
+            "signal": "datum.family + '  ' + format(datum.count,',')"
+          },
+          "align": {
+            "value": "right"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "font": {
+            "value": "DM Sans"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fill": {
+            "value": "#253c34"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "from": {
+        "data": "statuses"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "right+20"
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "text": {
+            "signal": "datum.status + '  ' + format(datum.count,',')"
+          },
+          "align": {
+            "value": "left"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "font": {
+            "value": "DM Sans"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fill": {
+            "value": "#253c34"
+          }
+        }
+      }
+    }
+  ]
+}

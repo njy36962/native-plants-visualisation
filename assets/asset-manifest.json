@@ -1,0 +1,95 @@
+{
+  "retrieved_utc": "2026-10-06T08:21:53.604531+00:00",
+  "assets": [
+    {
+      "file": "assets/vendor/vega-package.json",
+      "url": "https://registry.npmjs.org/vega/latest",
+      "bytes": 2872,
+      "sha256": "5fa9b146bb32cb1fe88974c6312de97d8ba2e70a40be3ba0d58cef9d90857a83"
+    },
+    {
+      "file": "assets/vendor/vega.min.js",
+      "url": "https://cdn.jsdelivr.net/npm/vega@6.4.0/build/vega.min.js",
+      "bytes": 521123,
+      "sha256": "8f6a3587cf8d4f42c7e08120e3eb05d067e746d554e39d2dcf52acc0bd5ba28f"
+    },
+    {
+      "file": "assets/vendor/vega-LICENSE",
+      "url": "https://cdn.jsdelivr.net/npm/vega@6.4.0/LICENSE",
+      "bytes": 1533,
+      "sha256": "63727832aaf62004a2b249c933e327f3c90caf49e41a72f4bf436edf632cbda8"
+    },
+    {
+      "file": "assets/vendor/vega-lite-package.json",
+      "url": "https://registry.npmjs.org/vega-lite/latest",
+      "bytes": 5293,
+      "sha256": "da20f5bb4518e1f4857a960105f7291b76977ac50d15ae6b9c0f467fe83e88f6"
+    },
+    {
+      "file": "assets/vendor/vega-lite.min.js",
+      "url": "https://cdn.jsdelivr.net/npm/vega-lite@6.4.3/build/vega-lite.min.js",
+      "bytes": 250845,
+      "sha256": "35a9821df838825b05a6a73e9414b58747a1b18321583858ed903c66393a5c7e"
+    },
+    {
+      "file": "assets/vendor/vega-lite-LICENSE",
+      "url": "https://cdn.jsdelivr.net/npm/vega-lite@6.4.3/LICENSE",
+      "bytes": 1529,
+      "sha256": "f618900fd0d64046963b29f40590cdd1e341a2f41449f99110d82fd81fea808c"
+    },
+    {
+      "file": "assets/vendor/vega-embed-package.json",
+      "url": "https://registry.npmjs.org/vega-embed/latest",
+      "bytes": 3808,
+      "sha256": "1cd79cdf69b430046d093dacc356472f36f02054b032f23ff4bb8baa0d57f4dc"
+    },
+    {
+      "file": "assets/vendor/vega-embed.min.js",
+      "url": "https://cdn.jsdelivr.net/npm/vega-embed@7.3.0/build/vega-embed.min.js",
+      "bytes": 60298,
+      "sha256": "b1455caba2fb1a72fb46025ba0ba1316e2dbc7f0dd40a3f6040172bf9c08ba91"
+    },
+    {
+      "file": "assets/vendor/vega-embed-LICENSE",
+      "url": "https://cdn.jsdelivr.net/npm/vega-embed@7.3.0/LICENSE",
+      "bytes": 1528,
+      "sha256": "32df67148f0fc3db0eb9e263a7b75d07f1eb14c61955005a4a39c6918d10d137"
+    },
+    {
+      "file": "assets/fonts/fraunces-source.css",
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&display=swap",
+      "bytes": 5592,
+      "sha256": "399ba57b1f01f781034047ba845b56601a7d3221e66e1dd0aae9637f08c49488"
+    },
+    {
+      "file": "assets/fonts/fraunces.woff2",
+      "url": "https://fonts.gstatic.com/s/fraunces/v38/6NUu8FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0K7iN7hzFUPJH58nib14c7qv8.woff2",
+      "bytes": 36620,
+      "sha256": "7f9d191d999336d3b9790afa72e1358e50a13b06d4f289341e92a311967a80f9"
+    },
+    {
+      "file": "assets/fonts/fraunces-OFL.txt",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/fraunces/OFL.txt",
+      "bytes": 4391,
+      "sha256": "bdf4c22802eaf804f998195871c6b8938aac2ac14b2d78a8bd66a6f1eced833b"
+    },
+    {
+      "file": "assets/fonts/dm-sans-source.css",
+      "url": "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap",
+      "bytes": 3484,
+      "sha256": "93cb54f6ae6ab0cf3b0d74710e763fb4e7249c4da9981c4586c071971dd5d6ea"
+    },
+    {
+      "file": "assets/fonts/dm-sans.woff2",
+      "url": "https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu0-K4.woff2",
+      "bytes": 36932,
+      "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543"
+    },
+    {
+      "file": "assets/fonts/dm-sans-OFL.txt",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/dmsans/OFL.txt",
+      "bytes": 4482,
+      "sha256": "9af36190332437f5ecd09974de43c1f7c77a310a996cdd8ceb25628b458840e1"
+    }
+  ]
+}

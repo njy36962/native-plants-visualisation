@@ -1,0 +1,211 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "C10. Absolute documented threatened richness; circles represent jurisdictions.",
+  "width": "container",
+  "height": 520,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "DM Sans",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "gridColor": "#e3e5df",
+      "domain": false,
+      "tickColor": "#c7cfc6",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "orient": "bottom",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 12,
+      "fontWeight": 500,
+      "anchor": "start",
+      "color": "#253c34",
+      "offset": 12
+    },
+    "text": {
+      "font": "DM Sans"
+    }
+  },
+  "projection": {
+    "type": "conicEqualArea",
+    "parallels": [
+      -18,
+      -36
+    ],
+    "rotate": [
+      -134,
+      0,
+      0
+    ]
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/processed/states.geojson",
+        "format": {
+          "type": "json",
+          "property": "features"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#e5e9df",
+        "stroke": "#fbfaf4",
+        "strokeWidth": 1
+      }
+    },
+    {
+      "data": {
+        "url": "data/processed/state_summary.json"
+      },
+      "mark": {
+        "type": "circle",
+        "color": "#923c40",
+        "opacity": 0.65,
+        "stroke": "#fffdf6",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "longitude": {
+          "field": "longitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "latitude",
+          "type": "quantitative"
+        },
+        "size": {
+          "field": "verified_threatened_species",
+          "type": "quantitative",
+          "scale": {
+            "zero": true,
+            "range": [
+              0,
+              2200
+            ]
+          },
+          "legend": {
+            "title": "Recorded threatened species"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "state_name",
+            "type": "nominal",
+            "title": "Jurisdiction"
+          },
+          {
+            "field": "recorded_species",
+            "type": "quantitative",
+            "title": "Recorded native species",
+            "format": ","
+          },
+          {
+            "field": "verified_threatened_species",
+            "type": "quantitative",
+            "title": "Matched nationally threatened species",
+            "format": ","
+          },
+          {
+            "field": "verified_threatened_share_percent",
+            "type": "quantitative",
+            "title": "Share of recorded species (%)",
+            "format": ".2f"
+          }
+        ],
+        "order": {
+          "field": "verified_threatened_species",
+          "type": "quantitative",
+          "sort": "descending"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "data/processed/state_summary.json"
+      },
+      "mark": {
+        "type": "text",
+        "fontSize": 10,
+        "fontWeight": 600,
+        "color": "#152e24",
+        "stroke": "#fffdf6",
+        "strokeWidth": 2,
+        "dy": -5
+      },
+      "encoding": {
+        "longitude": {
+          "field": "longitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "latitude",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "count_label",
+          "type": "nominal"
+        },
+        "tooltip": [
+          {
+            "field": "state_name",
+            "type": "nominal",
+            "title": "Jurisdiction"
+          },
+          {
+            "field": "recorded_species",
+            "type": "quantitative",
+            "title": "Recorded native species",
+            "format": ","
+          },
+          {
+            "field": "verified_threatened_species",
+            "type": "quantitative",
+            "title": "Matched nationally threatened species",
+            "format": ","
+          },
+          {
+            "field": "verified_threatened_share_percent",
+            "type": "quantitative",
+            "title": "Share of recorded species (%)",
+            "format": ".2f"
+          }
+        ]
+      },
+      "transform": [
+        {
+          "joinaggregate": [
+            {
+              "op": "max",
+              "field": "verified_threatened_species",
+              "as": "maximum_count"
+            }
+          ]
+        },
+        {
+          "calculate": "datum.state_code + (datum.verified_threatened_species === datum.maximum_count ? ' ' + format(datum.verified_threatened_species,',') : '')",
+          "as": "count_label"
+        }
+      ]
+    }
+  ]
+}

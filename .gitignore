@@ -1,0 +1,30 @@
+/*
+!/.gitignore
+!/.nojekyll
+!/index.html
+!/README.md
+!/site-config.json
+!/assets/
+!/charts/
+!/css/
+!/js/
+!/data/
+!/docs/
+
+# Publish processed chart data and its source/licence metadata only.
+/data/*
+!/data/processed/
+
+# The final sketch is a submission artifact, not a preparation document.
+# Save the student's completed hand-drawn sketch PDF at this exact path.
+/docs/*
+!/docs/hand-drawn-sketch.pdf
+
+# Exclude temporary/editor files even inside otherwise published directories.
+**/__pycache__/
+*.pyc
+*.tmp
+*.bak
+*.log
+**/.DS_Store
+**/Thumbs.db

@@ -1,0 +1,225 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "C6. Original source locations in a deterministic sample; choose a focal species.",
+  "width": "container",
+  "height": 420,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "DM Sans",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "gridColor": "#e3e5df",
+      "domain": false,
+      "tickColor": "#c7cfc6",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "orient": "bottom",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 12,
+      "fontWeight": 500,
+      "anchor": "start",
+      "color": "#253c34",
+      "offset": 12
+    },
+    "text": {
+      "font": "DM Sans"
+    }
+  },
+  "projection": {
+    "type": "conicEqualArea",
+    "parallels": [
+      -18,
+      -36
+    ],
+    "rotate": [
+      -134,
+      0,
+      0
+    ]
+  },
+  "params": [
+    {
+      "name": "selectedSpecies",
+      "value": ""
+    }
+  ],
+  "layer": [
+    {
+      "data": {
+        "url": "data/processed/states.geojson",
+        "format": {
+          "type": "json",
+          "property": "features"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#e5e9df",
+        "stroke": "#fbfaf4",
+        "strokeWidth": 1
+      }
+    },
+    {
+      "data": {
+        "url": "data/processed/focal_points.json"
+      },
+      "transform": [
+        {
+          "filter": "datum.species_key === selectedSpecies"
+        },
+        {
+          "lookup": "species_key",
+          "from": {
+            "data": {
+              "url": "data/processed/focal_species.json"
+            },
+            "key": "species_key",
+            "fields": [
+              "scientific_name"
+            ]
+          }
+        }
+      ],
+      "mark": {
+        "type": "circle",
+        "color": "#287b82",
+        "size": 16,
+        "opacity": 0.6
+      },
+      "encoding": {
+        "longitude": {
+          "field": "longitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "latitude",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "field": "scientific_name",
+            "type": "nominal",
+            "title": "Species"
+          },
+          {
+            "field": "state_code",
+            "type": "nominal",
+            "title": "Jurisdiction"
+          },
+          {
+            "field": "year",
+            "type": "quantitative",
+            "title": "Record year",
+            "format": "d"
+          },
+          {
+            "field": "uncertainty_m",
+            "type": "quantitative",
+            "title": "Coordinate uncertainty (m)",
+            "format": ","
+          },
+          {
+            "field": "record_id",
+            "type": "nominal",
+            "title": "ALA record"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/processed/focal_species.json"
+      },
+      "transform": [
+        {
+          "filter": "datum.species_key === selectedSpecies"
+        },
+        {
+          "calculate": "format(datum.displayed_points,',') + ' sampled records'",
+          "as": "sample_label"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "fontSize": 11,
+        "color": "#287b82"
+      },
+      "encoding": {
+        "x": {
+          "value": 10
+        },
+        "y": {
+          "value": 10
+        },
+        "text": {
+          "field": "sample_label",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "data/processed/focal_points.json"
+      },
+      "transform": [
+        {
+          "filter": "datum.species_key === selectedSpecies"
+        },
+        {
+          "aggregate": [
+            {
+              "op": "distinct",
+              "field": "state_code",
+              "as": "jurisdictions"
+            }
+          ]
+        },
+        {
+          "calculate": "'Sample spans ' + datum.jurisdictions + (datum.jurisdictions === 1 ? ' jurisdiction' : ' jurisdictions')",
+          "as": "footprint_label"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "fontSize": 11,
+        "color": "#253c34"
+      },
+      "encoding": {
+        "x": {
+          "value": 10
+        },
+        "y": {
+          "value": 28
+        },
+        "text": {
+          "field": "footprint_label",
+          "type": "nominal"
+        }
+      }
+    }
+  ]
+}

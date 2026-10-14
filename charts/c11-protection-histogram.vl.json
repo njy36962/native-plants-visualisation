@@ -1,0 +1,162 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "C11. Histogram of published terrestrial protection across IBRA 7.1 bioregions.",
+  "width": "container",
+  "height": 280,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "DM Sans",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "gridColor": "#e3e5df",
+      "domain": false,
+      "tickColor": "#c7cfc6",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "orient": "bottom",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 12,
+      "fontWeight": 500,
+      "anchor": "start",
+      "color": "#253c34",
+      "offset": 12
+    },
+    "text": {
+      "font": "DM Sans"
+    }
+  },
+  "data": {
+    "url": "data/processed/protection_histogram.json"
+  },
+  "encoding": {
+    "y": {
+      "field": "region_count",
+      "type": "quantitative",
+      "axis": {
+        "title": "Number of bioregions",
+        "tickMinStep": 1
+      }
+    },
+    "tooltip": [
+      {
+        "field": "bin_start",
+        "type": "quantitative",
+        "title": "From (%)"
+      },
+      {
+        "field": "bin_end",
+        "type": "quantitative",
+        "title": "To (%)"
+      },
+      {
+        "field": "region_count",
+        "type": "quantitative",
+        "title": "Bioregions"
+      },
+      {
+        "field": "last_bin_includes_upper_bound",
+        "type": "nominal",
+        "title": "Upper boundary included"
+      }
+    ]
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "bar",
+        "stroke": "#fbfaf4",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "field": "bin_start",
+          "type": "quantitative",
+          "bin": "binned",
+          "scale": {
+            "domain": [
+              0,
+              100
+            ]
+          },
+          "axis": {
+            "title": "Bioregion land protected (%)",
+            "tickCount": 6
+          }
+        },
+        "x2": {
+          "field": "bin_end"
+        },
+        "color": {
+          "condition": {
+            "test": "datum.region_count === datum.maximum_regions",
+            "value": "#b88136"
+          },
+          "value": "#285646"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "dy": -9,
+        "fontSize": 11,
+        "color": "#253c34"
+      },
+      "encoding": {
+        "x": {
+          "field": "bin_midpoint",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              100
+            ]
+          },
+          "axis": {
+            "title": "Bioregion land protected (%)",
+            "tickCount": 6
+          }
+        },
+        "text": {
+          "field": "region_count",
+          "type": "quantitative"
+        }
+      }
+    }
+  ],
+  "transform": [
+    {
+      "calculate": "(datum.bin_start+datum.bin_end)/2",
+      "as": "bin_midpoint"
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "max",
+          "field": "region_count",
+          "as": "maximum_regions"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "C12. Eight-state descriptive comparison of CAPAD protection and recorded threatened share.",
+  "width": "container",
+  "height": 300,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "DM Sans",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "gridColor": "#e3e5df",
+      "domain": false,
+      "tickColor": "#c7cfc6",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "orient": "bottom",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 12,
+      "fontWeight": 500,
+      "anchor": "start",
+      "color": "#253c34",
+      "offset": 12
+    },
+    "text": {
+      "font": "DM Sans"
+    }
+  },
+  "data": {
+    "url": "data/processed/state_summary.json"
+  },
+  "params": [
+    {
+      "name": "selectedState",
+      "value": ""
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "protected_percent",
+      "type": "quantitative",
+      "axis": {
+        "title": "Terrestrial land protected (%)"
+      },
+      "scale": {
+        "domainMin": 0
+      }
+    },
+    "y": {
+      "field": "verified_threatened_share_percent",
+      "type": "quantitative",
+      "axis": {
+        "title": "Recorded species with threat matches (%)"
+      }
+    },
+    "tooltip": [
+      {
+        "field": "state_name",
+        "type": "nominal",
+        "title": "Jurisdiction"
+      },
+      {
+        "field": "recorded_species",
+        "type": "quantitative",
+        "title": "Recorded native species",
+        "format": ","
+      },
+      {
+        "field": "verified_threatened_species",
+        "type": "quantitative",
+        "title": "Matched nationally threatened species",
+        "format": ","
+      },
+      {
+        "field": "verified_threatened_share_percent",
+        "type": "quantitative",
+        "title": "Share of recorded species (%)",
+        "format": ".2f"
+      },
+      {
+        "field": "protected_percent",
+        "type": "quantitative",
+        "title": "CAPAD protected land (%)",
+        "format": ".2f"
+      }
+    ]
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 110,
+        "color": "#287b82",
+        "stroke": "#fffdf6",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "opacity": {
+          "condition": {
+            "test": "selectedState === '' || datum.state_code === selectedState",
+            "value": 0.9
+          },
+          "value": 0.18
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "dx": {
+          "expr": "datum.protected_percent === datum.maximum_protection || datum.protected_percent === datum.minimum_protection ? -9 : 9"
+        },
+        "dy": {
+          "expr": "datum.protected_percent === datum.maximum_protection || datum.protected_percent === datum.minimum_protection ? 16 : -9"
+        },
+        "align": {
+          "expr": "datum.protected_percent === datum.maximum_protection || datum.protected_percent === datum.minimum_protection ? 'right' : 'left'"
+        },
+        "fontSize": 11,
+        "color": "#253c34"
+      },
+      "encoding": {
+        "text": {
+          "field": "protection_label",
+          "type": "nominal"
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedState === '' || datum.state_code === selectedState",
+            "value": 1
+          },
+          "value": 0.2
+        }
+      }
+    }
+  ],
+  "transform": [
+    {
+      "joinaggregate": [
+        {
+          "op": "max",
+          "field": "protected_percent",
+          "as": "maximum_protection"
+        },
+        {
+          "op": "min",
+          "field": "protected_percent",
+          "as": "minimum_protection"
+        }
+      ]
+    },
+    {
+      "calculate": "datum.state_code + (datum.protected_percent === datum.maximum_protection ? ' ' + format(datum.protected_percent,'.1f') + '%' : '')",
+      "as": "protection_label"
+    }
+  ]
+}

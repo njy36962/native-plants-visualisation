@@ -1,0 +1,157 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "C9. Indicative listing jurisdictions, not state legal assessments.",
+  "width": "container",
+  "height": 350,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "DM Sans",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "gridColor": "#e3e5df",
+      "domain": false,
+      "tickColor": "#c7cfc6",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": 500,
+      "labelColor": "#52615a",
+      "titleColor": "#253c34",
+      "orient": "bottom",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 12,
+      "fontWeight": 500,
+      "anchor": "start",
+      "color": "#253c34",
+      "offset": 12
+    },
+    "text": {
+      "font": "DM Sans"
+    }
+  },
+  "data": {
+    "url": "data/processed/listing_jurisdiction_matrix.json"
+  },
+  "encoding": {
+    "x": {
+      "field": "status",
+      "type": "ordinal",
+      "sort": [
+        "Critically Endangered",
+        "Endangered",
+        "Vulnerable"
+      ],
+      "axis": {
+        "title": null,
+        "labelAngle": 0,
+        "labelLimit": 180
+      }
+    },
+    "y": {
+      "field": "state_code",
+      "type": "ordinal",
+      "axis": {
+        "title": null
+      }
+    },
+    "tooltip": [
+      {
+        "field": "state_name",
+        "type": "nominal",
+        "title": "Indicative jurisdiction"
+      },
+      {
+        "field": "status",
+        "type": "nominal",
+        "title": "National status"
+      },
+      {
+        "field": "species_count",
+        "type": "quantitative",
+        "title": "Matched species",
+        "format": ","
+      }
+    ]
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "rect",
+        "strokeWidth": 3,
+        "cornerRadius": 3
+      },
+      "encoding": {
+        "color": {
+          "field": "species_count",
+          "type": "quantitative",
+          "scale": {
+            "range": [
+              "#faf0df",
+              "#d3a26b",
+              "#793b3d"
+            ]
+          },
+          "legend": {
+            "title": "Matched species",
+            "gradientLength": 160
+          }
+        },
+        "stroke": {
+          "condition": {
+            "test": "datum.species_count === datum.maximum_cell",
+            "value": "#b88136"
+          },
+          "value": "#fffdf6"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "fontSize": 13,
+        "fontWeight": 500
+      },
+      "encoding": {
+        "text": {
+          "field": "species_count",
+          "type": "quantitative",
+          "format": ","
+        },
+        "color": {
+          "condition": {
+            "test": "luminance(scale('color', datum.species_count)) > 0.179",
+            "value": "#000000"
+          },
+          "value": "#ffffff"
+        }
+      }
+    }
+  ],
+  "transform": [
+    {
+      "joinaggregate": [
+        {
+          "op": "max",
+          "field": "species_count",
+          "as": "maximum_cell"
+        }
+      ]
+    }
+  ]
+}
