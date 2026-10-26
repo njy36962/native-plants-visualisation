@@ -509,7 +509,7 @@ figcaption {
 
 .source-caption {
   display: block;
-  margin-top: 8px;
+  margin-top: 0;
 }
 
 .spec-link {
@@ -583,14 +583,6 @@ figcaption {
 
 .species-note .eyebrow {
   font-size: 10px;
-}
-
-.mini-rule {
-  height: 1px;
-  width: 50px;
-  background: #b5c9b4;
-  margin: var(--space-lg) 0 0;
-  padding-bottom: var(--space-lg);
 }
 
 .reading-note {
@@ -1107,10 +1099,6 @@ summary:focus-visible {
 
   .species-note p {
     font-size: 13px;
-  }
-
-  .mini-rule {
-    margin: 16px 0;
   }
 
   .geography-guide dl {
